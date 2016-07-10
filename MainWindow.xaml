@@ -1,0 +1,285 @@
+﻿<Window x:Class="WpfOptimusPoc.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfOptimusPoc.ViewModel"
+        mc:Ignorable="d"
+        Title="MainWindow" WindowStartupLocation="CenterScreen" WindowState="Maximized">
+    <Window.Resources>
+        <XmlDataProvider x:Key="Pumps" XPath="/Pumps/Pump" Source="App_Data\pumps.xml" />
+        <XmlDataProvider x:Key="Items" XPath="/Items/Category" Source="App_Data\Items.xml" />
+        <ObjectDataProvider x:Key="MainWindowVM" ObjectType="{x:Type local:MainWindowVM}" />
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="2*" />            
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <!-- Pump Details -->
+        <Grid Grid.Row="0" Background="#4A5459">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <ItemsControl x:Name="list" DataContext="{StaticResource Pumps}" ItemsSource="{Binding}" ScrollViewer.VerticalScrollBarVisibility="Auto">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Margin="10" Background="#F1F1F1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="2*" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <Grid Grid.Row="0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Margin="10" Grid.Column="0">
+                                    <TextBlock Text="{Binding XPath=@number}" Margin="5" />
+                                    <TextBlock Text="{Binding XPath=@status}" Margin="5" />
+                                </StackPanel>
+                                <Image Grid.Column="1" Source="/Images/pump.jpg" Width="30" Height="40" />
+                            </Grid>
+                            <StackPanel Grid.Row="1" Width="100" Height="25">
+                                <StackPanel.Style>
+                                    <Style TargetType="StackPanel">
+                                        <Setter Property="Background" Value="#69797E" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding XPath=@status}" Value="FILLING">
+                                                <Setter Property="Background" Value="Red" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </StackPanel.Style>
+                            </StackPanel>
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+            <StackPanel Grid.Column="1" Orientation="Vertical">
+                <Button Content="EMERGENCY" Margin="10" Background="Red" Padding="5,25,5,5" />
+                <Button Content="PUMP OPTIONS" Margin="10" Padding="5,25,5,5" />
+            </StackPanel>
+        </Grid>
+        
+        <!-- Product Details -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="2*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <StackPanel Background="#F1F1F1">
+                <StackPanel.Resources>
+                    <ControlTemplate x:Key="btnTemplate" TargetType="Button">
+                        <Grid>
+                            <ContentPresenter Content="{TemplateBinding Content}" />
+                        </Grid>
+                    </ControlTemplate>
+                </StackPanel.Resources>
+                <Button Template="{StaticResource btnTemplate}" Height="20" Width="20" Margin="10">
+                    <Button.Content>
+                        <Image Source="/Images/btnDetails.jpg" />
+                    </Button.Content>
+                </Button>
+                <Button Template="{StaticResource btnTemplate}" Height="20" Width="20" Margin="10">
+                    <Button.Content>
+                        <Image Source="/Images/btnNote.jpg" />
+                    </Button.Content>
+                </Button>
+                <Button Template="{StaticResource btnTemplate}" Height="20" Width="20" Margin="10">
+                    <Button.Content>
+                        <Image Source="/Images/btnWindow.jpg" />
+                    </Button.Content>
+                </Button>
+                <Button Template="{StaticResource btnTemplate}" Height="20" Width="20" Margin="10">
+                    <Button.Content>
+                        <Image Source="/Images/btnSettings.jpg" />
+                    </Button.Content>
+                </Button>
+                <Button Template="{StaticResource btnTemplate}" Height="20" Width="20" Margin="10">
+                    <Button.Content>
+                        <Image Source="/Images/btnExit.jpg" />
+                    </Button.Content>
+                </Button>
+            </StackPanel>
+            <StackPanel Grid.Column="1" DataContext="{StaticResource MainWindowVM}">
+                <StackPanel.Resources>
+                    <Style TargetType="{x:Type GridViewColumnHeader}">
+                        <Setter Property="HorizontalContentAlignment" Value="Center" />
+                        <Setter Property="Background" Value="#4A5459" />
+                        <Setter Property="Padding" Value="10" />
+                        <Setter Property="Foreground" Value="White" />
+                    </Style>
+                </StackPanel.Resources>
+                <ListView ItemsSource="{Binding Path=ShoppingItems}"  Background="#F1F1F1" Margin="10" HorizontalContentAlignment="Center" Height="300">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="Code" DisplayMemberBinding="{Binding Code}" Width="100" />
+                            <GridViewColumn Header="Description" DisplayMemberBinding="{Binding Description}" Width="200" />
+                            <GridViewColumn Header="Qty." Width="50" >
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBox Text="{Binding Qty, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="35" TextAlignment="Right" MaxLength="3" />
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="Price" Width="70">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBox Text="{Binding Price, StringFormat='0.00', Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="50" TextAlignment="Right" />
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="Disc." Width="50">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Discount, StringFormat={}{0}%}" Width="25" TextAlignment="Right" />
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="Amount" Width="70">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Amount, StringFormat='0.00'}" Width="50" TextAlignment="Right" />
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn>
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Button Height="20" Width="20" Command="{Binding Source={StaticResource MainWindowVM}, Path=DecrementItem}" CommandParameter="{Binding Code}">
+                                                <Button.Template>
+                                                    <ControlTemplate>
+                                                        <Image>
+                                                            <Image.Style>
+                                                                <Style TargetType="Image">
+                                                                    <Setter Property="Source" Value="/Images/minus.png" />
+                                                                    <Setter Property="ToolTip" Value="Decrease quantity by 1." />
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding Qty}" Value="1">
+                                                                            <Setter Property="Source" Value="/Images/disabledMinus.png" />
+                                                                            <Setter Property="ToolTip" Value="Quantity cannot be decreased." />
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </Image.Style>
+                                                        </Image>
+                                                    </ControlTemplate>
+                                                </Button.Template>
+                                            </Button>
+                                            <Button Height="20" Width="20" Command="{Binding Source={StaticResource MainWindowVM}, Path=IncrementItem}" CommandParameter="{Binding Code}">
+                                                <Button.Template>
+                                                    <ControlTemplate>
+                                                        <Image Source="/Images/plus.png"></Image>
+                                                    </ControlTemplate>
+                                                </Button.Template>
+                                            </Button>
+                                            <Button Height="25" Width="25" Command="{Binding Source={StaticResource MainWindowVM}, Path=RemoveItem}" CommandParameter="{Binding Code}">
+                                                <Button.Template>
+                                                    <ControlTemplate>
+                                                        <Image Source="/Images/cross.png"></Image>
+                                                    </ControlTemplate>
+                                                </Button.Template>
+                                            </Button>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="10">
+                    <TextBlock>
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="FontWeight" Value="Bold" />
+                                <Setter Property="FontSize" Value="16" />
+                            </Style>
+                        </TextBlock.Style>
+                        <Bold>Total: </Bold>
+                        <Run>Rs. </Run>
+                        <Run Text="{Binding TotalAmount, StringFormat='0.00'}" />
+                    </TextBlock>
+                </StackPanel>
+            </StackPanel>
+            <StackPanel Grid.Column="2" Background="#F1F1F1">
+                <TabControl DataContext="{StaticResource Items}" ItemsSource="{Binding}">
+                    <TabControl.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding XPath=@Name}" Background="#4A5459" Padding="10" Foreground="White" />
+                        </DataTemplate>
+                    </TabControl.ItemTemplate>
+                    <TabControl.ContentTemplate>
+                        <DataTemplate>
+                            <StackPanel Background="#F1F1F1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="350"
+                                        DataContext="{Binding XPath=Item}">
+                                <ItemsControl ItemsSource="{Binding}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Background="#F1F1F1" Margin="5">
+                                                <Border BorderBrush="Black" BorderThickness="1">
+                                                    <Button Command="{Binding Source={StaticResource MainWindowVM}, Path=AddItem}" CommandParameter="{Binding}">
+                                                        <Button.Template>
+                                                            <ControlTemplate>
+                                                                <StackPanel>
+                                                                    <Image Source="{Binding XPath=Url}" Height="100" Width="100" StretchDirection="Both" />
+                                                                    <TextBlock Text="{Binding XPath=Name}" Background="#4A5459" Foreground="White" Padding="2" />
+                                                                </StackPanel>
+                                                            </ControlTemplate>
+                                                        </Button.Template>
+                                                    </Button>
+                                                </Border>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <WrapPanel />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                </ItemsControl>
+                            </StackPanel>
+                        </DataTemplate>
+                    </TabControl.ContentTemplate>
+                </TabControl>
+                <StackPanel Margin="10" Orientation="Horizontal">
+                    <StackPanel.Resources>
+                        <Style x:Key="btnBlack" TargetType="Button">
+                            <Setter Property="Margin" Value="5" />
+                            <Setter Property="Background" Value="#4A5459" />
+                            <Setter Property="Foreground" Value="White" />
+                            <Setter Property="Padding" Value="10" />
+                            <Setter Property="Width" Value="100" />
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Foreground" Value="Black" />
+                                    <Setter Property="FontWeight" Value="Bold" />                                    
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Resources>
+                    <Button Content="Reprint" Style="{StaticResource btnBlack}" />
+                    <Button Content="Stock Search" Style="{StaticResource btnBlack}" />
+                    <Button Content="Price Check" Style="{StaticResource btnBlack}" />
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+        
+        <!-- Status Bar -->
+        <StatusBar Grid.Row="2" VerticalAlignment="Bottom" Background="#69797E">
+            <TextBlock>
+                <Bold>c-STORE COMMANDER 8.0 </Bold>
+                <Run>BY INFONET TECHNOLOGY</Run>
+            </TextBlock>
+        </StatusBar>
+    </Grid>    
+</Window>

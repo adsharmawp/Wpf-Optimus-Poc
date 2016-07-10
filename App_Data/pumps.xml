@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Pumps xmlns="">
+  <Pump number="1" status="IDEL" />
+  <Pump number="2" status="IDEL" />
+  <Pump number="3" status="IDEL" />
+  <Pump number="4" status="IDEL" />
+  <Pump number="5" status="IDEL" />
+  <Pump number="6" status="IDEL" />
+  <Pump number="7" status="IDEL" />
+  <Pump number="8" status="IDEL" />
+  <Pump number="9" status="IDEL" />
+  <Pump number="10" status="IDEL" />
+  <Pump number="11" status="IDEL" />
+  <Pump number="12" status="IDEL" />
+  <Pump number="13" status="IDEL" />
+  <Pump number="14" status="IDEL" />
+  <Pump number="15" status="FILLING" />
+  <Pump number="16" status="IDEL" />
+</Pumps>
