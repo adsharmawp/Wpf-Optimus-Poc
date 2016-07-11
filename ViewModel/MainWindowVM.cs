@@ -28,6 +28,13 @@ namespace WpfOptimusPoc.ViewModel
             get { return _totalAmount; }
             set { _totalAmount = value; RaisePropertyChanged("TotalAmount"); }
         }
+        
+        private decimal _totalQuantity;
+        public decimal TotalQuantity
+        {
+            get { return _totalQuantity; }
+            set { _totalQuantity = value; RaisePropertyChanged("TotalQuantity"); }
+        }
         #endregion
 
         #region Commands
@@ -35,6 +42,7 @@ namespace WpfOptimusPoc.ViewModel
         public ICommand IncrementItem { get; set; }
         public ICommand DecrementItem { get; set; }
         public ICommand RemoveItem { get; set; }
+        public ICommand MaxQuantity { get; set; }
         #endregion
 
         public MainWindowVM()
@@ -44,6 +52,7 @@ namespace WpfOptimusPoc.ViewModel
             IncrementItem = new RelayCommand<string>(_incrementItem);
             DecrementItem = new RelayCommand<string>(_decrementItem);
             RemoveItem = new RelayCommand<string>(_removeItem);
+            MaxQuantity = new RelayCommand<string>(_maxQuantity);
             // Properties
             ShoppingItems = new ObservableCollection<ShoppingItem>();
         }
@@ -53,28 +62,17 @@ namespace WpfOptimusPoc.ViewModel
         private void _incrementItem(string itemCode)
         {
             var item = ShoppingItems.FirstOrDefault(i => i.Code == itemCode);
-            if (item != null)
-            {
-                item.Qty += 1;
-            }
+            if(item.QuantityActual < item.MaxQuantity) item.IncrementQuantityByOne();
             CalculateTotalAmount();
         }
 
         private void _decrementItem(string itemCode)
         {
             var item = ShoppingItems.FirstOrDefault(i => i.Code == itemCode);
-            if (item != null)
-            {
-                if (item.Qty > 1)
-                {
-                    item.Qty -= 1;
-                }
-            }
+            if (item.QuantityActual > 1) item.DecrementQuantityByOne();
             CalculateTotalAmount();
         }
-
-
-
+        
         private void _removeItem(string itemCode)
         {
             var item = ShoppingItems.FirstOrDefault(i => i.Code == itemCode);
@@ -86,18 +84,19 @@ namespace WpfOptimusPoc.ViewModel
         {
             XmlElement element = obj as XmlElement;
             var item = ShoppingItems.FirstOrDefault(i => i.Code == element.Attributes["Code"].Value);
-            if (item != null)
+            if (item != null && item.QuantityActual < item.MaxQuantity)
             {
-                item.Qty += 1;
+                item.IncrementQuantityByOne();
             }
-            else
+            else if (item == null)
             {
                 var newShoppingItem = new ShoppingItem();
                 newShoppingItem.Code = element.Attributes["Code"].Value;
                 newShoppingItem.Description = element.GetElementsByTagName("Name")[0].InnerText;
                 newShoppingItem.Price = decimal.Parse(element.GetElementsByTagName("Price")[0].InnerText);
-                newShoppingItem.Qty = 1;
-                newShoppingItem.Discount = decimal.Parse(element.GetElementsByTagName("Discount")[0].InnerText);
+                newShoppingItem.Quantity = "1";
+                newShoppingItem.DiscountPercentage = decimal.Parse(element.GetElementsByTagName("Discount")[0].InnerText);
+                newShoppingItem.MaxQuantity = int.Parse(element.GetElementsByTagName("Quantity")[0].InnerText);
                 newShoppingItem.PropertyChanged += NewShoppingItem_PropertyChanged;
                 ShoppingItems.Add(newShoppingItem);
             }
@@ -106,6 +105,42 @@ namespace WpfOptimusPoc.ViewModel
 
         private void NewShoppingItem_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
+            if(e.PropertyName == "Quantity")
+            {
+                var item = (sender as ShoppingItem);
+                if(item.QuantityActual == 0)
+                {
+                    var result = MessageBox.Show("Are you sure you want to remove this item?", "Confirm", MessageBoxButton.OKCancel);
+                    if(result == MessageBoxResult.OK)
+                    {
+                        ShoppingItems.Remove(item);
+                    }
+                    else
+                    {
+                        item.Quantity = "1";
+                    }
+                }
+            }
+            CalculateTotalAmount();
+        }
+
+
+        private void _maxQuantity(string itemCode)
+        {
+            // TODO: need to implement
+            var item = ShoppingItems.FirstOrDefault(i => i.Code == itemCode);
+            if(item != null && item.Quantity== "*")
+            {
+                var result = MessageBox.Show("Are you sure you want to use max quantity for this item?", "Confirm", MessageBoxButton.YesNo);
+                if (result == MessageBoxResult.Yes)
+                {
+                    item.Quantity = item.MaxQuantity.ToString();
+                }
+                else
+                {
+                    item.Quantity = "1";
+                }
+            }
             CalculateTotalAmount();
         }
         #endregion
@@ -114,11 +149,14 @@ namespace WpfOptimusPoc.ViewModel
         private void CalculateTotalAmount()
         {
             decimal totalAmount = 0;
+            int totalQuantity = 0;
             foreach(var item in ShoppingItems)
             {
                 totalAmount = totalAmount + item.Amount;
+                totalQuantity = totalQuantity + item.QuantityActual;
             }
             TotalAmount = totalAmount;
+            TotalQuantity = totalQuantity;
         }
         #endregion
     }

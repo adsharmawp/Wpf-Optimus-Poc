@@ -36,7 +36,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -120,7 +122,6 @@
     <Resource Include="Images\minus.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\disabledCross.png" />
     <Resource Include="Images\disabledMinus.png" />
   </ItemGroup>
   <ItemGroup>
@@ -135,6 +136,9 @@
     <Resource Include="Images\Products\GulabJamun.jpg" />
     <Resource Include="Images\Products\hot-dog-with-mustard.jpg" />
     <Resource Include="Images\Products\idli.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\disabledPlus.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

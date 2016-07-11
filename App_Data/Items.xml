@@ -5,28 +5,28 @@
       <Name>HotDog</Name>
       <Price>13.5</Price>
       <Discount>0</Discount>
-      <Quantity>100</Quantity>
+      <Quantity>44</Quantity>
       <Url>\Images\Products\hot-dog-with-mustard.jpg</Url>      
     </Item>
     <Item Code="C001I002">
       <Name>Corndog</Name>
       <Price>9.1</Price>
       <Discount>2</Discount>
-      <Quantity>100</Quantity>
+      <Quantity>32</Quantity>
       <Url>\Images\Products\corn-dogs.jpg</Url>
     </Item>
     <Item Code="C001I003">
       <Name>Chips</Name>
       <Price>9.1</Price>
       <Discount>0</Discount>
-      <Quantity>100</Quantity>
+      <Quantity>77</Quantity>
       <Url>\Images\Products\chips.jpg</Url>
     </Item>
     <Item Code="C001I004">
       <Name>Cheeseburger</Name>
       <Price>23.15</Price>
       <Discount>5</Discount>
-      <Quantity>100</Quantity>
+      <Quantity>44</Quantity>
       <Url>\Images\Products\burger.jpg</Url>
     </Item>
   </Category>
@@ -35,14 +35,14 @@
       <Name>Frozen Green Peas</Name>
       <Price>66.5</Price>
       <Discount>15</Discount>
-      <Quantity>100</Quantity>
+      <Quantity>155</Quantity>
       <Url>\Images\Products\GreenPeas.jpg</Url>
     </Item>
     <Item Code="C002I002">
       <Name>Dosa Batter</Name>
       <Price>33.23</Price>
       <Discount>10</Discount>
-      <Quantity>100</Quantity>
+      <Quantity>14</Quantity>
       <Url>\Images\Products\dosaBatter.jpg</Url>
     </Item>
     <Item Code="C002I003">
@@ -56,7 +56,7 @@
       <Name>Rava Idli</Name>
       <Price>22.23</Price>
       <Discount>20</Discount>
-      <Quantity>100</Quantity>
+      <Quantity>77</Quantity>
       <Url>\Images\Products\idli.jpg</Url>
     </Item>
   </Category>

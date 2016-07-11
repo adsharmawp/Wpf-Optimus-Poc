@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WpfOptimusPoc.vmBase;
+﻿using WpfOptimusPoc.vmBase;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel;
+using System;
 
 namespace WpfOptimusPoc.Model
 {
-    public class ShoppingItem : ViewModelBase
+    public class ShoppingItem : ViewModelBase, IDataErrorInfo
     {
         private string _code;
         public string Code
@@ -16,23 +14,50 @@ namespace WpfOptimusPoc.Model
             set { _code = value; RaisePropertyChanged("Code"); }
         }
 
-        private string _description;
+        private string _description;        
         public string Description
         {
             get { return _description; }
             set { _description = value; RaisePropertyChanged("Description"); }
         }
-
-        private int _qty;
-        public int Qty
+        
+        public string _quantity;
+        public string Quantity
         {
-            get { return _qty; }
+            get { return _quantity; }
             set {
-                _qty = value;
-                _amount = _unitAmount * Qty;
-                RaisePropertyChanged("Qty");
-                RaisePropertyChanged("Amount");
+                _quantity = value;
+                int quantityActual;
+                if(int.TryParse(_quantity, out quantityActual))
+                {
+                    QuantityActual = quantityActual;
+                    Amount = UnitAmount * QuantityActual;
+                    RaisePropertyChanged("Amount");
+                    if(QuantityActual == MaxQuantity)
+                    {
+                        IsMaxQuantity = true;
+                        RaisePropertyChanged("IsMaxQuantity");
+                    }
+                    else
+                    {
+                        IsMaxQuantity = false;
+                        RaisePropertyChanged("IsMaxQuantity");
+                    }
+                }
+                RaisePropertyChanged("Quantity");
             }
+        }
+        public int QuantityActual { get; private set; }
+        public decimal UnitAmount { get; private set; }
+        public decimal Amount { get; private set; }
+        public decimal DiscountPercentage { get; set; }
+        public bool IsMaxQuantity { get; set; }
+        
+        private int _maxQuantity;
+        public int MaxQuantity
+        {
+            get { return _maxQuantity; }
+            set { _maxQuantity = value; RaisePropertyChanged("MaxQuantity"); }
         }
 
         private decimal _price;
@@ -41,39 +66,51 @@ namespace WpfOptimusPoc.Model
             get { return _price; }
             set {
                 _price = value;
-                _unitAmount = Price - (Price * Discount) / 100;
-                _amount = _unitAmount * Qty;
+                UnitAmount = Price - (Price * DiscountPercentage) / 100;
+                Amount = UnitAmount * QuantityActual;
                 RaisePropertyChanged("Price");
                 RaisePropertyChanged("Amount");
             }
         }
+        
+        #region Validation
+        public string Error { get { throw new NotImplementedException(); } }
 
-
-        private decimal _discount;
-        public decimal Discount
+        public string this[string columnName]
         {
-            get { return _discount; }
-            set {
-                _discount = value;
-                _unitAmount = Price - (Price * Discount)/100;
-                _amount = _unitAmount * Qty;
-                RaisePropertyChanged("Discount");
-                RaisePropertyChanged("Amount");
+            get
+            {
+                switch (columnName)
+                {
+                    case "QuantityActual":
+                    case "Quantity":
+                        if (QuantityActual < 0 ) return "Invalid quantity.";
+                        if (QuantityActual > MaxQuantity) return "Insufficient Stock";
+                        break;
+                    case "Amount":
+                        if (Amount < 0) return "Invalid Amount.";
+                        break;
+                    case "Description":
+                        if (string.IsNullOrEmpty(Description)) return "Description required.";
+                        break;
+                }
+                return "";
             }
-        }
+         }
+        #endregion
 
-
-        private decimal _unitAmount;
-        public decimal UnitAmount
+        #region public function
+        public void IncrementQuantityByOne()
         {
-            get { return _unitAmount; }
+            QuantityActual += 1;
+            Quantity = QuantityActual.ToString();
         }
 
-        private decimal _amount;
-        public decimal Amount
+        public void DecrementQuantityByOne()
         {
-            get { return _amount; }
+            QuantityActual -= 1;
+            Quantity = QuantityActual.ToString();
         }
-
+        #endregion
     }
 }
